@@ -10,6 +10,8 @@ services:
         volumes:
             - ./prometheus:/etc/prometheus
             - prom_data:/prometheus
+        depends_on:
+            - mongodb_exporter
 
     grafana:
         image: grafana/grafana
@@ -23,6 +25,15 @@ services:
             - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
         volumes:
             - ./grafana:/etc/grafana/provisioning/datasources
+
+    mongodb_exporter:
+        image: percona/mongodb_exporter
+        container_name: mongodb_exporter
+        ports:
+            - 9216:9216
+        command:
+            - "--mongodb.uri=mongodb://10.130.227.200:30001"
+        restart: unless-stopped
 
 volumes:
     prom_data:
