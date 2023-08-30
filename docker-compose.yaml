@@ -15,7 +15,7 @@ services:
         image: grafana/grafana
         container_name: grafana
         ports:
-            - 31000:31000
+            - ${GF_SERVER_HTTP_PORT}:${GF_SERVER_HTTP_PORT}
         restart: unless-stopped
         environment:
             - GF_SERVER_HTTP_PORT=${GF_SERVER_HTTP_PORT}
