@@ -58,12 +58,11 @@ services:
         ports:
             - 9114:9114
         command:
-            - es.uri=${ELASTICSEARCH_URI}
-            - es.all=true
-            - es.cluster_settings=true
-            - es.indices=true
-            - es.indices_settings=true
-            - es.indices_mappings=true
+            - --es.uri=${ELASTICSEARCH_URI}
+            - --es.all
+            - --es.indices
+            - --es.indices_settings
+            - --es.indices_mappings
         restart: unless-stopped
 
     # mysqld_exporter:
