@@ -17,7 +17,7 @@ services:
         image: prom/prometheus
         container_name: prometheus
         command:
-            - "--config.file=/etc/prometheus/prometheus.yml"
+            - --config.file=/etc/prometheus/prometheus.yml
         ports:
             - 9090:9090
         restart: unless-stopped
@@ -28,6 +28,7 @@ services:
             - mongodb_exporter
             - redis_exporter
             - mysqld_exporter
+            - elasticsearch_exporter
 
     mongodb_exporter:
         image: bitnami/mongodb-exporter:latest
@@ -37,7 +38,8 @@ services:
         command:
             - --mongodb.uri=${MONGODB_URI}
             - --mongodb.direct-connect=false
-            - --collect-all
+            - --collect-all=true
+        restart: unless-stopped
 
     redis_exporter:
         image: bitnami/redis-exporter:latest
@@ -49,6 +51,20 @@ services:
             - --redis.user=${REDIS_USERNAME}
             - --redis.password=${REDIS_PASSWORD}
         restart: unless-stopped
+    
+    elasticsearch_exporter:
+        image: bitnami/elasticsearch-exporter:latest
+        container_name: elasticsearch_exporter
+        ports:
+            - 9114:9114
+        command:
+            - es.uri=${ELASTICSEARCH_URI}
+            - es.all=true
+            - es.cluster_settings=true
+            - es.indices=true
+            - es.indices_settings=true
+            - es.indices_mappings=true
+        restart: unless-stopped
 
     # mysqld_exporter:
     #     image: bitnami/mysqld-exporter:latest
@@ -58,6 +74,7 @@ services:
     #     command:
     #         - --mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}
     #         - --mysqld.address=${MYSQL_HOST}
+    #     restart: unless-stopped
 
 volumes:
     prom_data:

@@ -59,3 +59,9 @@ scrape_configs:
   #   static_configs:
   #     - targets:
   #         - mysql_exporter:9104
+
+  # ELASTICSEARCH
+  - job_name: elasticsearch_exporter
+    static_configs:
+      - targets:
+          - elasticsearch_exporter:9114
