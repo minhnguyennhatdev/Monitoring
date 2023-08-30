@@ -27,8 +27,8 @@ services:
         depends_on:
             - mongodb_exporter
             - redis_exporter
-            - mysqld_exporter
             - elasticsearch_exporter
+            # - mysqld_exporter
 
     mongodb_exporter:
         image: bitnami/mongodb-exporter:latest
