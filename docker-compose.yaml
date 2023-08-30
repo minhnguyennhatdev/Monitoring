@@ -51,7 +51,9 @@ services:
             - --redis.user=${REDIS_USERNAME}
             - --redis.password=${REDIS_PASSWORD}
         restart: unless-stopped
-    
+        extra_hosts:  # Enable this when using localhost
+            - host.docker.internal:host-gateway
+
     elasticsearch_exporter:
         image: bitnami/elasticsearch-exporter:latest
         container_name: elasticsearch_exporter
