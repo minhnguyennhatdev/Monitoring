@@ -1,82 +1,61 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+
 # A scrape configuration containing exactly one endpoint to scrape:
 scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets: ["localhost:9090"]
 
-  # - job_name: mongodb-metrics
-  #   scrape_interval: 60s
-  #   scrape_timeout: 30s
-  #   # scheme: https
-  #   metrics_path: "/metrics"
-  #   basic_auth:
-  #     username: <>
-  #     password: <>
-  #   http_sd_configs:
-  #     - url: <>
-  #       refresh_interval: 60s
-  #       basic_auth:
-  #         username: <>
-  #         password: <>
-
+  # MONGODB
   - job_name: mongodb_exporter
-    scrape_interval: 60s
-    scrape_timeout: 30s
-    # scheme: https
-    metrics_path: "/metrics"
     static_configs:
-      - targets: ["mongodb_exporter:9216"]
+      - targets:
+          - mongodb_exporter:9216
 
-  # - job_name: elasticsearch-exporter
-  #   scrape_interval: 60s
-  #   scrape_timeout: 30s
-  #   # scheme: https
-  #   metrics_path: "/metrics"
+  # REDIS
+  ## config for the multiple Redis targets that the exporter will scrape
+  # - job_name: redis_exporter_targets
   #   static_configs:
-  #     - targets: ["localhost:9114"]
-  #       labels:
-  #         service: elasticsearch
-  #   basic_auth:
-  #     username: <>
-  #     password: <>
+  #     - targets:
+  #         - redis://first-redis-host:6379
+  #         - redis://second-redis-host:6379
+  #         - redis://second-redis-host:6380
+  #   metrics_path: /scrape
   #   relabel_configs:
   #     - source_labels: [__address__]
-  #       regex: '(.*)\:9108'
-  #       target_label: "instance"
-  #       replacement: "$1"
+  #       target_label: __param_target
+  #     - source_labels: [__param_target]
+  #       target_label: instance
+  #     - target_label: __address__
+  #       replacement: <<REDIS-EXPORTER-HOSTNAME>>:9121
+  ## config for scraping the exporter itself
+  - job_name: redis_exporter
+    static_configs:
+      - targets:
+          - redis_exporter:9121
+
+
+  # MYSQL
+  ## config for the multiple Mysql targets that the exporter will scrape
+  # - job_name: mysql_exporter_targets # To get metrics about the mysql exporter’s targets
+  #   params:
+  #     # Not required. Will match value to child in config file. Default value is `client`.
+  #     auth_module: [client]
+  #   static_configs:
+  #     - targets:
+  #         - server1:3306
+  #         - server2:3306
+  #   relabel_configs:
   #     - source_labels: [__address__]
-  #       regex: '.*\.(.*)\.lan.*'
-  #       target_label: "environment"
-  #       replacement: "$1"
-
-  # - job_name: mysql-exporter
-  #   scrape_interval: 60s
-  #   scrape_timeout: 30s
-  #   # scheme: https
+  #       target_label: __param_target
+  #     - source_labels: [__param_target]
+  #       target_label: instance
+  #     - target_label: __address__
+  #       replacement: <<MYSQL-EXPORTER-HOSTNAME>>:9104
+  ## config for scraping the exporter itself
+  # - job_name: mysql_exporter
   #   static_configs:
-  #     - targets: ["localhost:9104"]
-  #       labels:
-  #         alias: <dbname>
-
-  # - job_name: redis-exporter
-  #   scrape_interval: 60s
-  #   scrape_timeout: 30s
-  #   # scheme: https
-  #   static_configs:
-  #     - targets: ["localhost:9121"]
-
-  # - job_name: logging-service
-  #   scrape_interval: 60s
-  #   scrape_timeout: 30s
-  #   # scheme: https
-  #   metrics_path: "/api/v3/logging/ping"
-  #   static_configs:
-  #     - targets: ["localhost:3001"]
-
-  # - job_name: neon-postgres-operations
-  #   scrape_interval: 60s
-  #   scrape_timeout: 30s
-  #   # scheme: https
-  #   metrics_path: "/api/v2/projects/<projectid>/operations"
-  #   static_configs:
-  #     - targets: ["https://console.neon.tech"]
+  #     - targets:
+  #         - mysql_exporter:9104
