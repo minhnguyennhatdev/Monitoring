@@ -39,7 +39,7 @@ scrape_configs:
 
   # MYSQL
   ## config for the multiple Mysql targets that the exporter will scrape
-  # - job_name: mysql_exporter_targets # To get metrics about the mysql exporter’s targets
+  # - job_name: mysqld_exporter_targets # To get metrics about the mysql exporter’s targets
   #   params:
   #     # Not required. Will match value to child in config file. Default value is `client`.
   #     auth_module: [client]
@@ -55,10 +55,10 @@ scrape_configs:
   #     - target_label: __address__
   #       replacement: <<MYSQL-EXPORTER-HOSTNAME>>:9104
   ## config for scraping the exporter itself
-  # - job_name: mysql_exporter
-  #   static_configs:
-  #     - targets:
-  #         - mysql_exporter:9104
+  - job_name: mysqld_exporter
+    static_configs:
+      - targets:
+          - mysqld_exporter:9104
 
   # ELASTICSEARCH
   - job_name: elasticsearch_exporter

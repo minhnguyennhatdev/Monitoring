@@ -26,22 +26,22 @@ services:
         volumes:
             - ./prometheus:/etc/prometheus
             - prom_data:/prometheus
-        depends_on:
-            # - mongodb_exporter
+        depends_on: # ? Update depends_on per each exporter using
+            - mongodb_exporter
             - redis_exporter
             - elasticsearch_exporter
-            # - mysqld_exporter
+            - mysqld_exporter
 
-    # mongodb_exporter:
-    #     image: bitnami/mongodb-exporter:latest
-    #     container_name: mongodb_exporter
-    #     ports:
-    #         - 9216:9216
-    #     command:
-    #         - --mongodb.uri=${MONGODB_URI}
-    #         - --mongodb.direct-connect=false
-    #         - --collect-all=true
-    #     restart: unless-stopped
+    mongodb_exporter:
+        image: bitnami/mongodb-exporter:latest
+        container_name: mongodb_exporter
+        ports:
+            - 9216:9216
+        command:
+            - --mongodb.uri=${MONGODB_URI}
+            - --mongodb.direct-connect=${MONGODB_DIRECT_CONNECT}
+            - --collect-all=true
+        restart: unless-stopped
 
     redis_exporter:
         image: bitnami/redis-exporter:latest
@@ -53,7 +53,7 @@ services:
             - --redis.user=${REDIS_USERNAME}
             - --redis.password=${REDIS_PASSWORD}
         restart: unless-stopped
-        extra_hosts:  # Enable this when using localhost
+        extra_hosts:  # ? Enable this when using localhost
             - host.docker.internal:host-gateway
 
     elasticsearch_exporter:
@@ -69,15 +69,17 @@ services:
             - --es.indices_mappings
         restart: unless-stopped
 
-    # mysqld_exporter:
-    #     image: bitnami/mysqld-exporter:latest
-    #     container_name: mysqld_exporter
-    #     ports:
-    #         - 9104:9104
-    #     command:
-    #         - --mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}
-    #         - --mysqld.address=${MYSQL_HOST}
-    #     restart: unless-stopped
+    mysqld_exporter:
+        image: bitnami/mysqld-exporter:latest
+        container_name: mysqld_exporter
+        ports:
+            - 9104:9104
+        command:
+            - --mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}
+            - --mysqld.address=${MYSQL_HOST}
+        restart: unless-stopped
+        extra_hosts:  # ? Enable this when using localhost
+            - host.docker.internal:host-gateway
 
 volumes:
     prom_data:
