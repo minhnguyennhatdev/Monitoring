@@ -1,23 +1,6 @@
-#### UPDATE MONGO USER ROLE
+#### SOME EXPORTERS NEED SPECIFIC USER PRIVILEGES, PLEASE READ DOCUMENTS FOR DETAIL
 
-### Permissions
-Connecting user should have sufficient rights to query needed stats:
-
-```
-   {
-      "role":"clusterMonitor",
-      "db":"admin"
-   },
-   {
-      "role":"read",
-      "db":"local"
-   }
-```
-
-
-
-#### DOCUMENTS
-
+### DOCUMENTS
 [mysql-exporter](https://github.com/prometheus/mysqld_exporter)  
 [mongodb-exporter](https://github.com/percona/mongodb_exporter)  
 [redis-exporter](https://github.com/oliver006/redis_exporter)  
