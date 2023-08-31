@@ -15,22 +15,6 @@ scrape_configs:
           - mongodb_exporter:9216
 
   # REDIS
-  ## config for the multiple Redis targets that the exporter will scrape
-  # - job_name: redis_exporter_targets
-  #   static_configs:
-  #     - targets:
-  #         - redis://first-redis-host:6379
-  #         - redis://second-redis-host:6379
-  #         - redis://second-redis-host:6380
-  #   metrics_path: /scrape
-  #   relabel_configs:
-  #     - source_labels: [__address__]
-  #       target_label: __param_target
-  #     - source_labels: [__param_target]
-  #       target_label: instance
-  #     - target_label: __address__
-  #       replacement: <<REDIS-EXPORTER-HOSTNAME>>:9121
-  ## config for scraping the exporter itself
   - job_name: redis_exporter
     static_configs:
       - targets:
@@ -38,23 +22,6 @@ scrape_configs:
 
 
   # MYSQL
-  ## config for the multiple Mysql targets that the exporter will scrape
-  # - job_name: mysqld_exporter_targets # To get metrics about the mysql exporter’s targets
-  #   params:
-  #     # Not required. Will match value to child in config file. Default value is `client`.
-  #     auth_module: [client]
-  #   static_configs:
-  #     - targets:
-  #         - server1:3306
-  #         - server2:3306
-  #   relabel_configs:
-  #     - source_labels: [__address__]
-  #       target_label: __param_target
-  #     - source_labels: [__param_target]
-  #       target_label: instance
-  #     - target_label: __address__
-  #       replacement: <<MYSQL-EXPORTER-HOSTNAME>>:9104
-  ## config for scraping the exporter itself
   - job_name: mysqld_exporter
     static_configs:
       - targets:
@@ -65,3 +32,9 @@ scrape_configs:
     static_configs:
       - targets:
           - elasticsearch_exporter:9114
+
+  # KAFKA
+  - job_name: kafka_exporter
+    static_configs:
+      - targets:
+          - kafka_exporter:9308

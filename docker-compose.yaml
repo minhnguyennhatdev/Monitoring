@@ -1,5 +1,4 @@
 services:
-
     grafana:
         image: grafana/grafana
         container_name: grafana
@@ -52,7 +51,19 @@ services:
             - --redis.user=${REDIS_USERNAME}
             - --redis.password=${REDIS_PASSWORD}
         restart: unless-stopped
-        extra_hosts:  # ? Enable this when using localhost
+        extra_hosts: # ? Enable this when using localhost
+            - host.docker.internal:host-gateway
+
+    mysqld_exporter:
+        image: bitnami/mysqld-exporter:latest
+        container_name: mysqld_exporter
+        ports:
+            - 9104
+        command:
+            - --mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}
+            - --mysqld.address=${MYSQL_HOST}
+        restart: unless-stopped
+        extra_hosts: # ? Enable this when using localhost
             - host.docker.internal:host-gateway
 
     elasticsearch_exporter:
@@ -68,17 +79,14 @@ services:
             - --es.indices_mappings
         restart: unless-stopped
 
-    mysqld_exporter:
-        image: bitnami/mysqld-exporter:latest
-        container_name: mysqld_exporter
+    kafka_exporter:
+        image: bitnami/kafka-exporter:latest
+        container_name: kafka_exporter
         ports:
-            - 9104
+            - 9308
         command:
-            - --mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}
-            - --mysqld.address=${MYSQL_HOST}
+            - --kafka.server=${KAFKA_SERVER}
         restart: unless-stopped
-        extra_hosts:  # ? Enable this when using localhost
-            - host.docker.internal:host-gateway
 
 volumes:
     prom_data:
