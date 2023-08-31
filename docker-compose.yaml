@@ -35,7 +35,7 @@ services:
         image: bitnami/mongodb-exporter:latest
         container_name: mongodb_exporter
         ports:
-            - 9216:9216
+            - 9216
         command:
             - --mongodb.uri=${MONGODB_URI}
             - --mongodb.direct-connect=${MONGODB_DIRECT_CONNECT}
@@ -46,7 +46,7 @@ services:
         image: bitnami/redis-exporter:latest
         container_name: redis_exporter
         ports:
-            - 9121:9121
+            - 9121
         command:
             - --redis.addr=${REDIS_URI}
             - --redis.user=${REDIS_USERNAME}
@@ -59,7 +59,7 @@ services:
         image: bitnami/elasticsearch-exporter:latest
         container_name: elasticsearch_exporter
         ports:
-            - 9114:9114
+            - 9114
         command:
             - --es.uri=${ELASTICSEARCH_URI}
             - --es.all
@@ -72,7 +72,7 @@ services:
         image: bitnami/mysqld-exporter:latest
         container_name: mysqld_exporter
         ports:
-            - 9104:9104
+            - 9104
         command:
             - --mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}
             - --mysqld.address=${MYSQL_HOST}
