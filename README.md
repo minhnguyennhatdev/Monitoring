@@ -1,4 +1,4 @@
-### Some Exporters Need Specific User Privileges, Please Read Documents For Detail
+### *Some Exporters Need Specific User Privileges, Please Read Documents For Detail*
 
 ## DOCUMENTS
 - [mysql-exporter](https://github.com/prometheus/mysqld_exporter)  
