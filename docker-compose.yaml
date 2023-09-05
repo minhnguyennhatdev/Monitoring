@@ -4,31 +4,44 @@ services:
         container_name: grafana
         ports:
             - 3000:3000
-        restart: unless-stopped
         environment:
-            - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
-            - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+            - "GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}"
+            - "GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}"
         volumes:
-            - ./grafana:/etc/grafana/provisioning/datasources
-            - ./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
-            - ./grafana/dashboards:/var/lib/grafana/dashboards
+            - "./grafana:/etc/grafana/provisioning/datasources"
+            - "./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml"
+            - "./grafana/dashboards:/var/lib/grafana/dashboards"
+        restart: unless-stopped
 
     prometheus:
         image: prom/prometheus
         container_name: prometheus
-        command:
-            - --config.file=/etc/prometheus/prometheus.yml
         ports:
             - 9090:9090
-        restart: unless-stopped
+        command:
+            - "--config.file=/etc/prometheus/prometheus.yml"
         volumes:
-            - ./prometheus:/etc/prometheus
-            - prom_data:/prometheus
+            - "./prometheus:/etc/prometheus"
+            - "prom_data:/prometheus"
+        restart: unless-stopped
         depends_on: # ? Update depends_on per each exporter using
             - mongodb_exporter
             - redis_exporter
-            - elasticsearch_exporter
             - mysqld_exporter
+            - elasticsearch_exporter
+            - kafka_exporter
+
+    # alertmanager:
+    #     image: prom/alertmanager
+    #     container_name: alertmanager
+    #     ports:
+    #         - 9093
+    #     command:
+    #         - "--config.file=/etc/alertmanager/config.yml"
+    #     volumes:
+    #         - "./alertmanager:/etc/alertmanager"
+    #         - "prom_data:/alertmanager"
+    #     restart: unless-stopped
 
     mongodb_exporter:
         image: bitnami/mongodb-exporter:latest
@@ -36,9 +49,9 @@ services:
         ports:
             - 9216
         command:
-            - --mongodb.uri=${MONGODB_URI}
-            - --mongodb.direct-connect=${MONGODB_DIRECT_CONNECT}
-            - --collect-all=true
+            - "--mongodb.uri=${MONGODB_URI}"
+            - "--mongodb.direct-connect=${MONGODB_DIRECT_CONNECT}"
+            - "--collect-all=true"
         restart: unless-stopped
 
     redis_exporter:
@@ -47,24 +60,32 @@ services:
         ports:
             - 9121
         command:
-            - --redis.addr=${REDIS_URI}
-            - --redis.user=${REDIS_USERNAME}
-            - --redis.password=${REDIS_PASSWORD}
+            - "--redis.addr=${REDIS_URI}"
+            - "--redis.user=${REDIS_USERNAME}"
+            - "--redis.password=${REDIS_PASSWORD}"
         restart: unless-stopped
         extra_hosts: # ? Enable this when using localhost
             - host.docker.internal:host-gateway
 
-    mysqld_exporter:
+    mysqld_master_exporter:
         image: bitnami/mysqld-exporter:latest
-        container_name: mysqld_exporter
+        container_name: mysqld_master_exporter
         ports:
             - 9104
         command:
-            - --mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}
-            - --mysqld.address=${MYSQL_HOST}
+            - "--mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}"
+            - "--mysqld.address=${MYSQL_HOST_MASTER}"
         restart: unless-stopped
-        extra_hosts: # ? Enable this when using localhost
-            - host.docker.internal:host-gateway
+
+    mysqld_slave_exporter:
+        image: bitnami/mysqld-exporter:latest
+        container_name: mysqld_slave_exporter
+        ports:
+            - 9104
+        command:
+            - "--mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}"
+            - "--mysqld.address=${MYSQL_HOST_SLAVE}"
+        restart: unless-stopped
 
     elasticsearch_exporter:
         image: bitnami/elasticsearch-exporter:latest
@@ -72,11 +93,11 @@ services:
         ports:
             - 9114
         command:
-            - --es.uri=${ELASTICSEARCH_URI}
-            - --es.all
-            - --es.indices
-            - --es.indices_settings
-            - --es.indices_mappings
+            - "--es.uri=${ELASTICSEARCH_URI}"
+            - "--es.all"
+            - "--es.indices"
+            - "--es.indices_settings"
+            - "--es.indices_mappings"
         restart: unless-stopped
 
     kafka_exporter:
@@ -85,7 +106,7 @@ services:
         ports:
             - 9308
         command:
-            - --kafka.server=${KAFKA_SERVER}
+            - "--kafka.server=${KAFKA_SERVER}"
         restart: unless-stopped
 
 volumes:
