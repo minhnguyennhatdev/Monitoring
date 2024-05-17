@@ -4,12 +4,9 @@ services:
         container_name: grafana
         ports:
             - 3000:3000
-        environment:
-            - "GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}"
-            - "GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}"
         volumes:
             - "./grafana:/etc/grafana/provisioning/datasources"
-            - "./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml"
+            # - "./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml"
             - "./grafana/dashboards:/var/lib/grafana/dashboards"
         restart: unless-stopped
 
@@ -25,11 +22,7 @@ services:
             - "prom_data:/prometheus"
         restart: unless-stopped
         depends_on: # ? Update depends_on per each exporter using
-            - mongodb_exporter
-            - redis_exporter
-            - mysqld_exporter
-            - elasticsearch_exporter
-            - kafka_exporter
+            - nginx_exporter
 
     # alertmanager:
     #     image: prom/alertmanager
@@ -43,71 +36,82 @@ services:
     #         - "prom_data:/alertmanager"
     #     restart: unless-stopped
 
-    mongodb_exporter:
-        image: bitnami/mongodb-exporter:latest
-        container_name: mongodb_exporter
-        ports:
-            - 9216
-        command:
-            - "--mongodb.uri=${MONGODB_URI}"
-            - "--mongodb.direct-connect=${MONGODB_DIRECT_CONNECT}"
-            - "--collect-all=true"
-        restart: unless-stopped
+    # mongodb_exporter:
+    #     image: bitnami/mongodb-exporter:latest
+    #     container_name: mongodb_exporter
+    #     ports:
+    #         - 9216
+    #     command:
+    #         - "--mongodb.uri=${MONGODB_URI}"
+    #         - "--mongodb.direct-connect=${MONGODB_DIRECT_CONNECT}"
+    #         - "--collect-all=true"
+    #     restart: unless-stopped
 
-    redis_exporter:
-        image: bitnami/redis-exporter:latest
-        container_name: redis_exporter
+    # redis_exporter:
+    #     image: bitnami/redis-exporter:latest
+    #     container_name: redis_exporter
+    #     ports:
+    #         - 9121
+    #     command:
+    #         - "--redis.addr=${REDIS_URI}"
+    #         - "--redis.user=${REDIS_USERNAME}"
+    #         - "--redis.password=${REDIS_PASSWORD}"
+    #     restart: unless-stopped
+    #     extra_hosts: # ? Enable this when using localhost
+    #         - host.docker.internal:host-gateway
+
+    # mysqld_master_exporter:
+    #     image: bitnami/mysqld-exporter:latest
+    #     container_name: mysqld_master_exporter
+    #     ports:
+    #         - 9104
+    #     command:
+    #         - "--mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}"
+    #         - "--mysqld.address=${MYSQL_HOST_MASTER}"
+    #     restart: unless-stopped
+
+    # mysqld_slave_exporter:
+    #     image: bitnami/mysqld-exporter:latest
+    #     container_name: mysqld_slave_exporter
+    #     ports:
+    #         - 9104
+    #     command:
+    #         - "--mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}"
+    #         - "--mysqld.address=${MYSQL_HOST_SLAVE}"
+    #     restart: unless-stopped
+
+    # elasticsearch_exporter:
+    #     image: bitnami/elasticsearch-exporter:latest
+    #     container_name: elasticsearch_exporter
+    #     ports:
+    #         - 9114
+    #     command:
+    #         - "--es.uri=${ELASTICSEARCH_URI}"
+    #         - "--es.all"
+    #         - "--es.indices"
+    #         - "--es.indices_settings"
+    #         - "--es.indices_mappings"
+    #     restart: unless-stopped
+
+    # kafka_exporter:
+    #     image: bitnami/kafka-exporter:latest
+    #     container_name: kafka_exporter
+    #     ports:
+    #         - 9308
+    #     command:
+    #         - "--kafka.server=${KAFKA_SERVER}"
+    #     restart: unless-stopped
+
+    nginx_exporter:
+        image: nginx/nginx-prometheus-exporter:latest
+        container_name: nginx_exporter
         ports:
-            - 9121
+            - 9113:9113
         command:
-            - "--redis.addr=${REDIS_URI}"
-            - "--redis.user=${REDIS_USERNAME}"
-            - "--redis.password=${REDIS_PASSWORD}"
+            - "-nginx.scrape-uri=http://localhost:81/nginx_status"
         restart: unless-stopped
         extra_hosts: # ? Enable this when using localhost
             - host.docker.internal:host-gateway
-
-    mysqld_master_exporter:
-        image: bitnami/mysqld-exporter:latest
-        container_name: mysqld_master_exporter
-        ports:
-            - 9104
-        command:
-            - "--mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}"
-            - "--mysqld.address=${MYSQL_HOST_MASTER}"
-        restart: unless-stopped
-
-    mysqld_slave_exporter:
-        image: bitnami/mysqld-exporter:latest
-        container_name: mysqld_slave_exporter
-        ports:
-            - 9104
-        command:
-            - "--mysqld.username=${MYSQL_USERNAME}:${MYSQL_PASSWORD}"
-            - "--mysqld.address=${MYSQL_HOST_SLAVE}"
-        restart: unless-stopped
-
-    elasticsearch_exporter:
-        image: bitnami/elasticsearch-exporter:latest
-        container_name: elasticsearch_exporter
-        ports:
-            - 9114
-        command:
-            - "--es.uri=${ELASTICSEARCH_URI}"
-            - "--es.all"
-            - "--es.indices"
-            - "--es.indices_settings"
-            - "--es.indices_mappings"
-        restart: unless-stopped
-
-    kafka_exporter:
-        image: bitnami/kafka-exporter:latest
-        container_name: kafka_exporter
-        ports:
-            - 9308
-        command:
-            - "--kafka.server=${KAFKA_SERVER}"
-        restart: unless-stopped
 
 volumes:
     prom_data:

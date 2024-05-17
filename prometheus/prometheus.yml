@@ -13,49 +13,55 @@ scrape_configs:
       - targets: ["localhost:9090"]
 
   # MONGODB
-  - job_name: mongodb_exporter
-    static_configs:
-      - targets:
-          - "mongodb_exporter:9216"
+  # - job_name: mongodb_exporter
+  #   static_configs:
+  #     - targets:
+  #         - "mongodb_exporter:9216"
 
-  # REDIS
-  - job_name: redis_exporter
-    static_configs:
-      - targets:
-          - "redis_exporter:9121"
+  # # REDIS
+  # - job_name: redis_exporter
+  #   static_configs:
+  #     - targets:
+  #         - "redis_exporter:9121"
 
-  # MYSQL
-  - job_name: mysqld_slave_sync # To get metrics about the mysql exporter’s targets
-    static_configs:
-      - targets:
-          - "mysqld_slave_exporter:9104"
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: "mysqld_master_exporter:9104"
-  - job_name: mysqld_master_exporter
-    static_configs:
-      - targets:
-          - "mysqld_master_exporter:9104"
-  # - job_name: mysqld_slave_exporter
+  # # MYSQL
+  # - job_name: mysqld_slave_sync # To get metrics about the mysql exporter’s targets
   #   static_configs:
   #     - targets:
   #         - "mysqld_slave_exporter:9104"
+  #   relabel_configs:
+  #     - source_labels: [__address__]
+  #       target_label: __param_target
+  #     - source_labels: [__param_target]
+  #       target_label: instance
+  #     - target_label: __address__
+  #       replacement: "mysqld_master_exporter:9104"
+  # - job_name: mysqld_master_exporter
+  #   static_configs:
+  #     - targets:
+  #         - "mysqld_master_exporter:9104"
+  # # - job_name: mysqld_slave_exporter
+  # #   static_configs:
+  # #     - targets:
+  # #         - "mysqld_slave_exporter:9104"
 
-  # ELASTICSEARCH
-  - job_name: elasticsearch_exporter
-    static_configs:
-      - targets:
-          - "elasticsearch_exporter:9114"
+  # # ELASTICSEARCH
+  # - job_name: elasticsearch_exporter
+  #   static_configs:
+  #     - targets:
+  #         - "elasticsearch_exporter:9114"
 
-  # KAFKA
-  - job_name: kafka_exporter
+  # # KAFKA
+  # - job_name: kafka_exporter
+  #   static_configs:
+  #     - targets:
+  #         - "kafka_exporter:9308"
+
+  # NGINX
+  - job_name: nginx_exporter
     static_configs:
-      - targets:
-          - "kafka_exporter:9308"
+      - targets: ["nginx:9113"]
+
 # alerting:
 #   alertmanagers:
 #     - scheme: http
